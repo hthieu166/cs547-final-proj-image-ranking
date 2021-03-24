@@ -1,0 +1,9 @@
+dataset_name: 'TinyImageNet'
+dataset_params:
+    data_root: '/home/hthieu/cs547/data/tiny-imagenet-200/'
+    spldata_dir: 
+        train: 'train'
+        val:   'test'
+        test:  'val'
+    lbl_fname: 'val/val_annotations.csv'
+# TODO: change the val and test datalst
