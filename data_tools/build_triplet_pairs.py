@@ -78,7 +78,7 @@ def build_val_set(args):
         for i in range(len(lines)):
             cls_name_to_id[lines[i]]= i
     annot_file = osp.join(data_dir, "val", "val_annotations.txt")
-    val_annot_df = pd.read_csv(annot_file, delimiter = "\t")
+    val_annot_df = pd.read_csv(annot_file, delimiter = "\t", header = None)
     with open(osp.join(args.output, "val_lst.txt"), "w") as fo:
         fo.write("\n".join(val_annot_df.iloc[:,0].tolist()))
     val_cls = val_annot_df.iloc[:,1].tolist()

@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-
-exp_id="img_ranking_baseline_res50"
+exp_id="img_ranking_baseline_res101"
 
 source "scripts/master_env.sh"
 
@@ -10,7 +9,6 @@ python main.py \
     --dataset_cfg "./configs/dataset_cfgs/tiny_imagennet_reid.yaml" \
     --train_cfg   "./configs/train_cfgs/${exp_id}.yaml" \
     --logdir      "logs/${exp_id}" \
-    --log_fname   "logs/${exp_id}/${exp_id}_test.log" \
+    --log_fname   "logs/${exp_id}/stdout.log" \
     --train_mode  "from_scratch" \
-    --pretrained_model_path "logs/${exp_id}/best.model" \
-    --is_training false
+    --is_training true

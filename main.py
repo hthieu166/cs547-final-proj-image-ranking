@@ -22,6 +22,7 @@ import src.utils.logging as logging
 logger = logging.get_logger(__name__)
 import ipdb
 import src.config as cfg
+import os.path as osp
 
 def parse_args():
     """Parse input arguments"""
@@ -135,9 +136,12 @@ def main():
               args.train_mode, train_params, device, args.pretrained_model_path)
     else:
         # Create data loader for testing
-        test_loaders = loader_fact.test_loaders()
+        test_loaders = loader_fact.build_loader("val",  do_shuffle= False, do_drop_last = False)
         model.load_model(args.pretrained_model_path)
-        test(model, criterion, test_loaders, device)   
+        eval_res = test(model, criterion, test_loaders, device, export_result = True)
+        eval_dir = osp.join(args.logdir, "eval_results")
+        os.makedirs(eval_dir, exist_ok = True)
+        np.save(osp.join(eval_dir, "val_preds.npy"), eval_res["preds"])   
     return 0
 
 if __name__ == '__main__':

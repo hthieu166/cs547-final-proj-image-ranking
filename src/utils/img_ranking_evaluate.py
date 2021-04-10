@@ -1,6 +1,6 @@
 import torch 
 import ipdb
-def img_ranking_evaluate(img_embs, labels):
+def img_ranking_evaluate(img_embs, labels, export_result = False):
     #Pair-wise L2 distance between each pair
     c_dist   = torch.cdist(img_embs, img_embs)
     #Sort the image id in ascending order by its distance 
@@ -15,11 +15,14 @@ def img_ranking_evaluate(img_embs, labels):
     top_1  = top_1.to(torch.float).mean()
     top_10 = top_10.to(torch.float).mean()
     top_49 = top_49.to(torch.float).mean()
-    return {
+    ret_res= {
         "acc_top1": top_1.cpu().item(),
         "acc_top10": top_10.cpu().item(),
         "acc_top49": top_49.cpu().item()
     }
+    if (export_result):
+        ret_res["preds"] = img_rank.cpu().numpy()
+    return ret_res
 
 
 if __name__ == "__main__":

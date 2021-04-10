@@ -12,7 +12,7 @@ logger = logging.get_logger(__name__)
 
 import ipdb
 
-def test(model, criterion, loader, device):
+def test(model, criterion, loader, device, export_result = False):
     """Evaluate the performance of a model
 
     Args:
@@ -47,7 +47,7 @@ def test(model, criterion, loader, device):
     test_img_embs = torch.vstack(test_img_embs)
     test_img_lbls = torch.hstack(test_img_lbls)
     pbar.finish()
-    return img_ranking_evaluate(test_img_embs, test_img_lbls)
+    return img_ranking_evaluate(test_img_embs, test_img_lbls, export_result)
 
 if __name__ == "__main__":
     pass
