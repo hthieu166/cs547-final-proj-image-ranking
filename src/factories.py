@@ -12,16 +12,17 @@ sys.path.insert(0, os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..', 'src')))
 
 """ > Import your datasets here """
-from src.datasets.tiny_imagenet import TinyImageNetDataset
+from src.datasets.tiny_imagenet import TinyImageNetTripletDataset
 
 """ > Import your models here """
 from src.models.triplet_net import TripletNet
-
+from src.models.triplet_net_baseline import TripletNetBaseline
 """ > Import your data augmentation functions here """
 from src.data_augmentation.image_random_erasing import RandomErasing
 
 """ > Import your loss functions here """
 from src.losses.triplet_loss  import TripletLoss
+from src.losses.triplet_loss_baseline import TripletLossBaseline
 
 """ > Import your data samplers here """
 from src.samplers.instance_id_sampler import InstanceIdSampler
@@ -69,7 +70,7 @@ class ModelFactory(BaseFactory):
     def __init__(self):
         self.info_msg = 'Generating model'
         self.objfn_dict = {
-            'TripletNet': TripletNet,
+            'TripletNetBaseline': TripletNetBaseline,
         }
 
 class DatasetFactory(BaseFactory):
@@ -77,7 +78,7 @@ class DatasetFactory(BaseFactory):
     def __init__(self):
         self.info_msg = 'Generating dataset'
         self.objfn_dict = {
-            'TinyImageNet': TinyImageNetDataset
+            'TinyImageNetTriplet': TinyImageNetTripletDataset
         }
 
 class DataAugmentationFactory(BaseFactory):
@@ -112,6 +113,7 @@ class LossFactory(BaseFactory):
         self.info_msg = 'Generating loss function'
         self.objfn_dict = {
             "TripletLoss": TripletLoss,
+            "TripletLossBaseline": TripletLossBaseline
         }
 
 

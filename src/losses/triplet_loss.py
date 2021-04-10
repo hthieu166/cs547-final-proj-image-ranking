@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.abspath(
 import torch
 import numpy as np
 import torch.nn as nn
-from src.utils.reid_metrics import pdist_torch
+# from src.utils.reid_metrics import pdist_torch
 import src.config as cfg
 import ipdb
 class BatchHardTripletSelector(object):

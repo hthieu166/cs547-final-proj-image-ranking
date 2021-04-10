@@ -67,7 +67,8 @@ class ConfigLoader:
         """
         cfg = ConfigLoader._load_yaml_content(fname)
 
-        convert_lst = ['init_lr', 'lr_decay', 'weight_decay', 'momentum']
+        convert_lst = ['init_lr', 'lr_decay']
         for key in convert_lst:
-            cfg[key] = float(cfg[key])
+            if key in cfg:
+                cfg[key] = float(cfg[key])
         return cfg

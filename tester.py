@@ -6,12 +6,13 @@ from __future__ import absolute_import
 import torch
 
 from src.utils.misc import MiscUtils
-from src.inferences.base_infer import BaseInfer
 import src.utils.logging as logging
+from src.utils.img_ranking_evaluate import *
 logger = logging.get_logger(__name__)
+
 import ipdb
 
-def test(model, criterion, loaders, device):
+def test(model, criterion, loader, device):
     """Evaluate the performance of a model
 
     Args:
@@ -26,22 +27,27 @@ def test(model, criterion, loaders, device):
     # Switch to eval mode
     model.eval()
     # Prepare data loader
-    eval_loader = loaders['test'] if 'test' in loaders else None
-    assert eval_loader is not None, "Evaluation loader is not specified"
-    
-    test_loss = 0.0
+    assert loader is not None, "Evaluation loader is not specified"
     # Setup progressbar
-    pbar = MiscUtils.gen_pbar(max_value=len(eval_loader), msg=eval_mess)
+    pbar = MiscUtils.gen_pbar(max_value=len(loader), msg="Testing: ")
+    test_img_embs = []
+    test_img_lbls = []
     with torch.no_grad():
-        for i, (samples, labels) in enumerate(eval_loader):
+        for i, (samples, labels) in enumerate(loader):
             # Evaluating for the current batch
             samples = samples.to(device)
             labels = labels.to(device)
             # Forwarding
             outputs = model(samples)
-            loss = 0.0 #self.criterion(outputs, labels)
-            test_loss += loss
+            test_img_embs.append(outputs)
+            test_img_lbls.append(labels)
             # Monitor progress
             pbar.update(i+1)
+
+    test_img_embs = torch.vstack(test_img_embs)
+    test_img_lbls = torch.hstack(test_img_lbls)
     pbar.finish()
-    
+    return img_ranking_evaluate(test_img_embs, test_img_lbls)
+
+if __name__ == "__main__":
+    pass

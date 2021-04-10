@@ -124,15 +124,6 @@ class BaseDataLoaderFactory():
             _loader = DataLoader(_dataset, shuffle=_shuffle, drop_last=_drop_last, 
             **_ld_dict["ld_params"])
         return _loader
-    
-    def get_train_loader(self):
-        return self.build_loader('train')
-    
-    def get_val_loader(self):
-        return self.build_loader("val",  do_shuffle= False, do_drop_last = False)
-
-    def get_test_loader(self):
-        return self.build_loader('test', do_shuffle= False, do_drop_last = False)
 
             
         

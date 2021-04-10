@@ -7,7 +7,7 @@ import os
 import time
 import ipdb
 from torch.utils.tensorboard import SummaryWriter
-
+import os.path as osp
 from tester import test
 from src.utils.misc import MiscUtils
 import src.utils.logging as logging
@@ -51,9 +51,9 @@ def train(model, optimizer, criterion, loaders, logdir,
 
     # Set up some variables
     best_score = 0.0
-
-    # writer = SummaryWriter(log_dir=logdir, purge_step=start_epoch)
-    writer = SummaryWriter(log_dir=logdir)
+    tensorboard_dir = osp.join(logdir, "tensorboard")
+    os.makedirs(tensorboard_dir, exist_ok=True )   
+    writer = SummaryWriter(log_dir= tensorboard_dir)
 
     # Go through training epochs
     for epoch in range(start_epoch, train_params['n_epochs']):
@@ -66,19 +66,24 @@ def train(model, optimizer, criterion, loaders, logdir,
                                      device, writer, run_iter)
 
         # Validation phase
-        val_loss, val_score = test(model, criterion, loaders, device)
-
+        val_loader   = loaders["val"]
+        img_ranking_acc = test(model, criterion, val_loader, device)
         # Log using Tensorboard
-        writer.add_scalars('losses', {'train': train_loss, 'val': val_loss}, epoch)
-        writer.add_scalar('val_score', val_score, epoch)
+        writer.add_scalars('losses', {'train': train_loss}, epoch)
+        writer.add_scalars('val_acc', img_ranking_acc, epoch)
 
         # Save training results when necessary
         if (epoch+1) % train_params['n_epochs_to_log'] == 0:
             MiscUtils.save_progress(model, optimizer, logdir, epoch)
 
+        logger.info("Score@1: {:.03f} \t Score@10: {:.03f} \t Score@49: {:.03f}".format(
+            img_ranking_acc["acc_top1"] *100, img_ranking_acc["acc_top10"] *100, img_ranking_acc["acc_top49"] * 100,  
+        ))
+
         # Backup the best model
-        if val_score > best_score:
-            logger.info('Current best score: %.2f' % val_loss)
+        val_score = img_ranking_acc["acc_top49"]
+        if  val_score> best_score:
+            logger.info('Current best score: %.2f' % val_score)
             best_score = val_score
             model.save_model(os.path.join(logdir, 'best.model'))
 
@@ -91,9 +96,7 @@ def train(model, optimizer, criterion, loaders, logdir,
                 logger.info('%.5f' % param_group['lr'])
 
         logger.info('-'*80)
-
     writer.close()
-
 
 def train_one_epoch(model, optimizer, criterion, train_loader, device, writer, run_iter):
     """Training routine for one epoch
@@ -125,7 +128,11 @@ def train_one_epoch(model, optimizer, criterion, train_loader, device, writer, r
 
         # Forward + Backward + Optimize
         optimizer.zero_grad()
-        outputs = model(samples)
+
+        a_feat  = model(samples[:,0,...])
+        p_feat  = model(samples[:,1,...])
+        n_feat  = model(samples[:,2,...])
+        outputs = {'a_feat': a_feat, 'p_feat':p_feat, 'n_feat': n_feat}
         loss = criterion(outputs, labels)
         loss.backward()
         optimizer.step()
@@ -138,10 +145,8 @@ def train_one_epoch(model, optimizer, criterion, train_loader, device, writer, r
         run_iter += 1
         if run_iter % 100 == 0:
             writer.add_scalar('train_loss_per_iter', loss.item(), run_iter)
-        
-        
+              
     pbar.finish()
-
     train_loss = train_loss.item()
     train_loss /= len(train_loader)
 

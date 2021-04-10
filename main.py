@@ -19,12 +19,10 @@ from src.loaders.base_loader_factory import BaseDataLoaderFactory
 from trainer import train
 from tester import test
 import src.utils.logging as logging
-
 logger = logging.get_logger(__name__)
-
 import ipdb
 import src.config as cfg
-from src.inferences.base_infer import BaseInfer
+
 def parse_args():
     """Parse input arguments"""
     def str2bool(v):
@@ -36,10 +34,6 @@ def parse_args():
         raise argparse.ArgumentTypeError('Boolean value expected.')
 
     parser = argparse.ArgumentParser()
-
-    parser.add_argument(
-        '-c', '--model_cfg', type=str,
-        help='Path to the model config filename')
     parser.add_argument(
         '-d', '--dataset_cfg', type=str,
         help='Path to the dataset config filename')
@@ -73,19 +67,6 @@ def parse_args():
         help='Path to the model to test. Only needed if is not training or '
              'is training and mode==from_pretrained')
 
-    parser.add_argument(
-        '--is_data_augmented', type=str2bool,
-        help='Whether training set is augmented')
-    
-    parser.add_argument(
-        '--output', type=str, default=None,
-        help='Path to save predictions/outputs from model after infering')
-    
-    #### Only for finetuning by subject ID ####
-    parser.add_argument(
-        '--datalst_pth', type=str, default=None,
-        help='Specify the path to msrs grouped by subject ID for finetuning')
-
     args = parser.parse_args()
 
     if (not args.is_training) or \
@@ -98,7 +79,7 @@ def parse_args():
 def main():
     """Main function"""
     # Load configurations
-    model_name, model_params = ConfigLoader.load_model_cfg(args.model_cfg)
+    model_name, model_params = ConfigLoader.load_model_cfg(args.train_cfg)
     dataset_name, dataset_params = ConfigLoader.load_dataset_cfg(args.dataset_cfg)
     train_params = ConfigLoader.load_train_cfg(args.train_cfg)
     
@@ -109,19 +90,12 @@ def main():
         device = torch.device('cuda', args.gpu_id)
     cfg.device = device
     logger.info('Using device: %s' % device)
-    
-    # Prepare datalst_pths
-    # if (args.datalst_pth is not None):
-    #     for lst in dataset_params['datalst_pth'].keys():
-    #         dataset_params['datalst_pth'][lst] = \
-    #         os.path.join(args.datalst_pth, dataset_params['datalst_pth'][lst])
 
     # Build model
     model_factory = ModelFactory()
     model = model_factory.generate(model_name, device=device, **model_params)
     model = model.to(device)
     
-
     # Set up loss criterion
     loss_fn_factory = LossFactory()
     loss_n = list(train_params['loss_fn'].keys())[0]
@@ -133,22 +107,23 @@ def main():
         'batch_size': train_params['batch_size'],
         'num_workers': args.num_workers,
     }
+    
     # Setup loaders
     loader_fact = BaseDataLoaderFactory(dataset_name, dataset_params, train_params, common_loader_params)
     # Main pipeline
     if args.is_training:
         train_val_loaders = {
-            "train": loader_fact.get_train_loader(),
-            "val"  : loader_fact.get_val_loader()
+            "train": loader_fact.build_loader("train"),
+            "val"  : loader_fact.build_loader("val",  do_shuffle= False, do_drop_last = False)
         }
         # Create optimizer
-        optimizer = optim.SGD(
-            model.parameters(),
-            lr=train_params['init_lr'],
-            momentum=train_params['momentum'],
-            weight_decay=train_params['weight_decay'],
-            nesterov=True)
-
+        if train_params["optimizer_name"] == "Adam":
+            optimizer = optim.Adam(model.parameters(),
+                lr=train_params['init_lr'], **train_params["optimizer_params"])
+        else:
+            print("Invalid optimizer request")
+            raise
+            
         # Train/val routine
         train(model, optimizer, criterion, train_val_loaders, args.logdir,
               args.train_mode, train_params, device, args.pretrained_model_path)
@@ -158,7 +133,6 @@ def main():
         model.load_model(args.pretrained_model_path)
         test(model, criterion, test_loaders, device)   
     return 0
-
 
 if __name__ == '__main__':
     # Fix random seeds here for pytorch and numpy
