@@ -118,12 +118,18 @@ def main():
         }
         # Create optimizer
         if train_params["optimizer_name"] == "Adam":
+            logger.info("Using Adam optimizer")
             optimizer = optim.Adam(model.parameters(),
-                lr=train_params['init_lr'], **train_params["optimizer_params"])
+                lr=train_params['init_lr'], **train_params["optimizer_params"], 
+                weight_decay = train_params["weight_decay"])
+        elif train_params["optimizer_name"] == "SGD":
+            logger.info("Using SGD optimizer")
+            optimizer = optim.SGD(model.parameters(),
+                lr=train_params['init_lr'], **train_params["optimizer_params"], 
+                weight_decay = train_params["weight_decay"])
         else:
             print("Invalid optimizer request")
             raise
-            
         # Train/val routine
         train(model, optimizer, criterion, train_val_loaders, args.logdir,
               args.train_mode, train_params, device, args.pretrained_model_path)

@@ -83,7 +83,7 @@ def train(model, optimizer, criterion, loaders, logdir,
         # Backup the best model
         val_score = img_ranking_acc["acc_top49"]
         if  val_score> best_score:
-            logger.info('Current best score: %.2f' % val_score)
+            logger.info('Current best score: %.3f' % val_score)
             best_score = val_score
             model.save_model(os.path.join(logdir, 'best.model'))
 

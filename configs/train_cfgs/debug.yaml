@@ -18,7 +18,6 @@ optimizer_params:
   momentum: 0.9
   nesterov: True
 weight_decay: 1e-4
-
 n_epochs_to_log: 5
 
 #Image transform configs
