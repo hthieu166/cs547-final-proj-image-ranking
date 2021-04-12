@@ -59,6 +59,10 @@ class TripletNetBaseline(BaseModel):
             raise ValueError("Model {} is not supported! ".format(self.base))
         # Build fc
         if (self.feat_vect_size != None):
+            nn.Sequential(
+                # nn.BatchNorm1d(2048),
+                nn.Linear(2048, self.feat_vect_size)
+            )
             self.fc = nn.Linear(2048, self.feat_vect_size)
         else:
             self.fc = None

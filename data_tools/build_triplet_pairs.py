@@ -55,18 +55,19 @@ def build_triplet_pairs(args):
     cls_imgs_ids = np.load(osp.join(args.output, "class_imgs_ids.npy"))
     n_total_cls, n_total_imgs  = cls_imgs_ids.shape 
     simp_triplet_pairs = []
-    for pos_cls in range(n_total_cls):
-        neg_cls = np.array([i for i in range(n_total_cls) if i != pos_cls])
-        pos_imgs = cls_imgs_ids[pos_cls]
-        
-        for neg_cls_idx in range(len(neg_cls)):
-            neg_imgs = cls_imgs_ids[neg_cls[neg_cls_idx]]
-            a, p = np.random.choice(pos_imgs, 2)
-            n,   = np.random.choice(neg_imgs, 1)
-            simp_triplet_pairs.append([a, p, n])
+    for trial in range(args.n_trials):
+        for pos_cls in range(n_total_cls):
+            neg_cls = np.array([i for i in range(n_total_cls) if i != pos_cls])
+            pos_imgs = cls_imgs_ids[pos_cls]
+            
+            for neg_cls_idx in range(len(neg_cls)):
+                neg_imgs = cls_imgs_ids[neg_cls[neg_cls_idx]]
+                a, p = np.random.choice(pos_imgs, 2)
+                n,   = np.random.choice(neg_imgs, 1)
+                simp_triplet_pairs.append([a, p, n])
     
     simp_triplet_pairs = np.array(simp_triplet_pairs)
-    np.save(osp.join(args.output, "simp_triplet_samples.npy"), simp_triplet_pairs)
+    np.save(osp.join(args.output, args.triplet_out_file), simp_triplet_pairs)
     print(simp_triplet_pairs.shape)
     print(simp_triplet_pairs[:20])
 
@@ -92,15 +93,17 @@ def parse_args():
                         help = "directory of the tiny image net folder")
     parser.add_argument("--output", type=str, default = "triplet_pairs",
                         help = "directory of the output folder")
-    parser.add_argument("--n_trials", type = int, default = 1,
-                        help = "how many times you want to sample triplet pairs on the whole dataset")
+    parser.add_argument("--triplet_out_file", type=str, default = "triplet_199000.npy",
+                        help = "directory for the training triplet pairs")
+    parser.add_argument("--n_trials", type = int, default = 5,
+                        help = "how many times you want to sample triplet pairs from the whole dataset")
     parser.add_argument("--seed", type=int, default = "1606",
                         help = "random seed")
     return parser.parse_args()
 
 if __name__ == "__main__":
     args = parse_args()
-    np.random.seed(args.seed)
+    # np.random.seed(args.seed)
     # build_list(args)
-    # build_triplet_pairs(args)
-    build_val_set(args)
+    build_triplet_pairs(args)
+    # build_val_set(args)

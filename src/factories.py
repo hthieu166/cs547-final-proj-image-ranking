@@ -91,7 +91,7 @@ class DataAugmentationFactory(BaseFactory):
             "random_crop": transforms.RandomCrop,
             "to_tensor": transforms.ToTensor,
             "normalize": transforms.Normalize,
-            "horizon_flip": transforms.RandomHorizontalFlip,
+            "horizontal_flip": transforms.RandomHorizontalFlip,
             "vertical_flip": transforms.RandomVerticalFlip,
             "random_erasing": RandomErasing,
         }

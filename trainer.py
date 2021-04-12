@@ -61,6 +61,9 @@ def train(model, optimizer, criterion, loaders, logdir,
 
         # Training phase
         train_loader = loaders['train']
+        #Resampling triplet pairs
+        train_loader.dataset.resampling_triplet()
+        
         run_iter = epoch * len(train_loader)
         train_loss = train_one_epoch(model, optimizer, criterion, train_loader,
                                      device, writer, run_iter)

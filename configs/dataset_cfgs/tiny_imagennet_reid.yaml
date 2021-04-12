@@ -2,5 +2,4 @@ dataset_name: 'TinyImageNetTriplet'
 dataset_params:
     data_root: '/home/hthieu/data/tiny-imagenet-200/'
     triplets_dir: 'triplet_pairs/'
-    lbl_fname: 'val/val_annotations.csv'
 # TODO: change the val and test datalst
