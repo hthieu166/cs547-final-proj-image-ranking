@@ -1,4 +1,4 @@
-# CS547-Final Project Image Rannking
+# CS547-Final Project Image Ranking
 
 ## Installation
 ### Setup
