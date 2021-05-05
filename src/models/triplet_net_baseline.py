@@ -1,8 +1,8 @@
-"""---- By Hieu Hoang ----"""
 from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
+"""---- Code By Hieu Hoang ----"""
 import sys
 import os
 sys.path.insert(0, os.path.abspath(

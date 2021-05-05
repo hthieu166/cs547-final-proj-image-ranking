@@ -1,9 +1,9 @@
-"""---- By Hieu Hoang ----"""
 """TinyImageNet-200 dataset dataset"""
 from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
+"""---- Code By Hieu Hoang ----"""
 import sys
 import os
 import xml.etree.ElementTree as ET
