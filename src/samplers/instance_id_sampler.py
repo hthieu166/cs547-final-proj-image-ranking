@@ -11,9 +11,14 @@ import random
 import logging
 import sys
 import ipdb
+import os
+import sys
+from torchvision import transforms
+sys.path.insert(0, os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..', '..')))
+from src.datasets.tiny_imagenet import TinyImageNetDataset
 
-
-class InstanceIdSampler(Sampler):
+class BatchSampler(Sampler):
     '''
     This sampler returns a triplet of (anchor, positive, negative) for training
     triplet-reid with batch hard. Given p (n_class) and k (n_num) 
@@ -21,7 +26,7 @@ class InstanceIdSampler(Sampler):
     Function: __iter__ is called every batch iteration
     '''
     def __init__(self, dataset, n_class, n_num, *args, **kwargs):
-        super(InstanceIdSampler, self).__init__(dataset, *args, **kwargs)
+        super(BatchSampler, self).__init__(dataset, *args, **kwargs)
         self.n_class = n_class
         self.n_num = n_num
         self.batch_size = self.n_class * self.n_num
@@ -53,3 +58,12 @@ class InstanceIdSampler(Sampler):
 
     def __len__(self):
         return self.iter_num
+
+if __name__ == "__main__":
+    ds = TinyImageNetDataset("train", "/home/hthieu/data/tiny-imagenet-200", "triplet_pairs",
+        transform = transforms.ToTensor())
+    sampler = BatchSampler(ds, 16, 4)
+    dl = DataLoader(ds, batch_sampler = sampler, num_workers = 4)
+    print(next(iter(dl)))
+
+    

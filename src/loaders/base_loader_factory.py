@@ -29,9 +29,6 @@ class BaseDataLoaderFactory():
         self.gen_data_augmentation()
         self.gen_data_sampler()
 
-        # self.fix_dataset_params('datalst_pth')
-        # self.fix_dataset_params('spldata_dir')
-
     def get_data_split(self):
         self.ld_dict['train'] = {}
         self.ld_dict['val']   = {}
