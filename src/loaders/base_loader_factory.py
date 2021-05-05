@@ -98,7 +98,7 @@ class BaseDataLoaderFactory():
         for i in transform_config.keys()])
         return composed_transforms
 
-    def build_loader(self, mode, do_shuffle= True, do_drop_last = True):
+    def build_loader(self, mode, sampler_name = None, sampler_params = None, do_shuffle= True, do_drop_last = True):
         _ld_dict = self.ld_dict[mode]
         #Set shuffle and drop_last
         _shuffle, _drop_last = do_shuffle, do_drop_last
@@ -113,7 +113,11 @@ class BaseDataLoaderFactory():
             self.dataset_name, mode=mode, **_data_params)
         
         #Use sampler
-        _sampler = self.get_sampler(_ld_dict['sampler'], _dataset)
+        _sampler = None
+        if sampler_name != None:
+            sampler_params["dataset"] = _dataset
+            _sampler = self.sampler_fact.generate(sampler_name, **sampler_params)
+        
         if (_sampler is not None):
             _loader = DataLoader(_dataset, batch_sampler=_sampler, 
             num_workers= _ld_dict["ld_params"]['num_workers'])

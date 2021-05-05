@@ -42,6 +42,10 @@ class TinyImageNetDataset(Dataset):
             print("Mode ", self.mode, "does not support")
             raise
         self.transform = transform
+        self.name = "TinyImageNetDataset"
+
+    def resampling_triplet(self):
+        pass
     
     def read_image_by_id(self, idx):
         """This function returns image at index idx"""
@@ -85,6 +89,7 @@ class TinyImageNetTripletDataset(TinyImageNetDataset):
     def __init__(self, mode, data_root, triplets_dir, datalst_pth = None, triplets_file = None, transform = None):
         super(TinyImageNetTripletDataset, self).__init__(mode, data_root, triplets_dir, datalst_pth, transform)
         self.resampling   = False
+        self.name = "TinyImageNetTripletDataset"
         if (triplets_file == None):
             self.cls_imgs_ids = np.load(osp.join(triplets_dir, "class_imgs_ids.npy"))
             self.resampling   = True

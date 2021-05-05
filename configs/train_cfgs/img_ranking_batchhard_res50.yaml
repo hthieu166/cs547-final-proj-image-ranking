@@ -6,9 +6,9 @@ model_params:
   feat_vect_size: 512 # Using nn.Linear(model_out, feat_vect_size)
 
 # Training configs
-batch_size: 32
-n_epochs: 80
-decay_epochs: [40,60]
+batch_size: 512
+n_epochs: 800
+decay_epochs: [300, 600]
 init_lr: 1e-3
 lr_decay: 0.1  # decaying rate for learning rate
 
@@ -19,7 +19,8 @@ optimizer_params:
   nesterov: True
 weight_decay: 1e-4
 
-n_epochs_to_log: 20
+n_epochs_to_log: 200
+n_epochs_to_eval: 20
 
 #Image transform configs
 transforms: #data augmentation 
@@ -39,5 +40,11 @@ transforms: #data augmentation
 
 # Loss function configs
 loss_fn: 
-  TripletLossBaseline:
+  TripletLossBatchHard:
     margin: 1.0
+
+#Sampler configs
+sampler:
+  BatchSampler:
+    n_class: 48
+    n_num  : 2

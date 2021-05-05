@@ -64,6 +64,10 @@ if __name__ == "__main__":
         transform = transforms.ToTensor())
     sampler = BatchSampler(ds, 16, 4)
     dl = DataLoader(ds, batch_sampler = sampler, num_workers = 4)
-    print(next(iter(dl)))
+    data, lbl = next(iter(dl))
+    
+    print(data.shape)
+    print(lbl)
+    ipdb.set_trace()
 
     
