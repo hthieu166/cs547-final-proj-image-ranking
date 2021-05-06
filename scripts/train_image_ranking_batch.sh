@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-exp_id="img_ranking_batchhard_res50_cfg2"
+exp_id="img_ranking_batchhard_efficientnet"
 
 source "scripts/master_env.sh"
 
