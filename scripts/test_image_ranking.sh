@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-exp_id="img_ranking_baseline_res50"
+exp_id="img_ranking_baseline_res50_cfg4"
 
 source "scripts/master_env.sh"
 
