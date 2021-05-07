@@ -23,6 +23,7 @@ from src.data_augmentation.image_random_erasing import RandomErasing
 """ > Import your loss functions here """
 from src.losses.triplet_loss  import TripletLoss
 from src.losses.triplet_loss_baseline import TripletLossBaseline
+from src.losses.triplet_improved import TripletLossImproved
 
 """ > Import your data samplers here """
 from src.samplers.instance_id_sampler import InstanceIdSampler
@@ -113,7 +114,8 @@ class LossFactory(BaseFactory):
         self.info_msg = 'Generating loss function'
         self.objfn_dict = {
             "TripletLoss": TripletLoss,
-            "TripletLossBaseline": TripletLossBaseline
+            "TripletLossBaseline": TripletLossBaseline,
+            "TripletLossImproved": TripletLossImproved
         }
 
 

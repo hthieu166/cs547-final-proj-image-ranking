@@ -1,5 +1,3 @@
-"""---- By Hieu Hoang ----"""
-"""TinyImageNet-200 dataset dataset"""
 from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
@@ -121,7 +119,7 @@ class TinyImageNetTripletDataset(Dataset):
        
 if __name__ == "__main__":
     loader = TinyImageNetTripletDataset(
-        "val", "/home/hthieu/data/tiny-imagenet-200", "triplet_pairs",
+        "val", "./data/tiny-imagenet-200", "triplet_pairs",
         transform = transforms.ToTensor())
     data, lbl = next(iter(loader))
     print(data.shape, lbl)

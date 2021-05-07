@@ -1,6 +1,6 @@
 dataset_name: 'TinyImageNetTriplet'
 dataset_params:
-    data_root:     '/home/hthieu/data/tiny-imagenet-200/'
+    data_root: './data/tiny-imagenet-200/'
     triplets_file: 'triplet_119400.npy'
-    triplets_dir:  'triplet_pairs/'
+    triplets_dir: 'triplet_pairs/'
 # TODO: change the val and test datalst
