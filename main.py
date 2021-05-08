@@ -14,7 +14,7 @@ from torch import optim
 from torch.utils.data import DataLoader
 
 from src.utils.load_cfg import ConfigLoader
-from src.factories import ModelFactory, LossFactory
+from src.factories import ModelFactory, LossFactory, DataSamplerFactory
 from src.loaders.base_loader_factory import BaseDataLoaderFactory
 from trainer import train
 from tester import test
@@ -97,24 +97,31 @@ def main():
     model = model_factory.generate(model_name, device=device, **model_params)
     model = model.to(device)
     
-    # Set up loss criterion
+    # Setup loss criterion
     loss_fn_factory = LossFactory()
     loss_n = list(train_params['loss_fn'].keys())[0]
     loss_params = list(train_params['loss_fn'].values())[0]
     criterion = loss_fn_factory.generate(loss_n, **loss_params)
 
-    # Set up common parameters for data loaders (shared among train/val/test)
+    # Setup common parameters for data loaders (shared among train/val/test)
     common_loader_params = {
         'batch_size': train_params['batch_size'],
         'num_workers': args.num_workers,
     }
-    
+    # Setup train samplers
+    train_sampler_name   = None
+    train_sampler_params = None
+    if 'sampler' in train_params:
+        train_sampler_name = list(train_params['sampler'].keys())[0]
+        train_sampler_params = list(train_params['sampler'].values())[0]
+
     # Setup loaders
     loader_fact = BaseDataLoaderFactory(dataset_name, dataset_params, train_params, common_loader_params)
     # Main pipeline
     if args.is_training:
         train_val_loaders = {
-            "train": loader_fact.build_loader("train"),
+            "train": loader_fact.build_loader("train", sampler_name = train_sampler_name,
+                                                      sampler_params= train_sampler_params),
             "val"  : loader_fact.build_loader("val",  do_shuffle= False, do_drop_last = False)
         }
         # Create optimizer

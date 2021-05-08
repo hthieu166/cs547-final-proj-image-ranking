@@ -1,4 +1,4 @@
-"""This code is adapted from 
+"""Reference: 
     https://github.com/CoinCheung/triplet-reid-pytorch/blob/master/triplet_selector.py
     https://github.com/CoinCheung/triplet-reid-pytorch/blob/master/loss.py
 """
@@ -14,9 +14,10 @@ sys.path.insert(0, os.path.abspath(
 import torch
 import numpy as np
 import torch.nn as nn
-# from src.utils.reid_metrics import pdist_torch
+from src.losses.triplet_loss_baseline import TripletLossBaseline
 import src.config as cfg
 import ipdb
+
 class BatchHardTripletSelector(object):
     '''
     a selector to generate hard batch embeddings from the embedded batch
@@ -25,7 +26,7 @@ class BatchHardTripletSelector(object):
         super(BatchHardTripletSelector, self).__init__()
 
     def __call__(self, embeds, labels):
-        dist_mtx = pdist_torch(embeds, embeds)
+        dist_mtx = torch.cdist(embeds, embeds)
         dist_mtx = dist_mtx.detach().cpu().numpy()
         labels = labels.contiguous().cpu().numpy().reshape((-1, 1))
         num = labels.shape[0]
@@ -43,12 +44,12 @@ class BatchHardTripletSelector(object):
         neg = embeds[neg_idxs].contiguous().view(num, -1)
         return embeds, pos, neg
 
-class TripletLoss(nn.Module):
+class TripletLossBatchHard(nn.Module):
     '''
     Compute normal triplet loss or soft margin triplet loss given triplets
     '''
     def __init__(self, margin = None):
-        super(TripletLoss, self).__init__()
+        super(TripletLossBatchHard, self).__init__()
         self.margin = margin
         if self.margin is None:  # use soft-margin
             self.Loss = nn.SoftMarginLoss()
@@ -57,9 +58,8 @@ class TripletLoss(nn.Module):
         self.batch_selector = BatchHardTripletSelector()
 
     def forward(self, embeds, labels):
-        embeds = embeds['feat']
         anchor, pos, neg = self.batch_selector(embeds, labels)
-
+        
         if self.margin is None:
             num_samples = anchor.shape[0]
             y = torch.ones((num_samples, 1)).view(-1)
@@ -70,3 +70,6 @@ class TripletLoss(nn.Module):
         else:
             loss = self.Loss(anchor, pos, neg)
         return loss
+
+if __name__ == "__main__":
+    lss = TripletLossBatchHard(1.0)

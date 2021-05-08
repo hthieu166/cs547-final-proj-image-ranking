@@ -32,8 +32,10 @@ def test(model, criterion, loader, device, export_result = False):
     pbar = MiscUtils.gen_pbar(max_value=len(loader), msg="Testing: ")
     test_img_embs = []
     test_img_lbls = []
+    # ipdb.set_trace()
     with torch.no_grad():
         for i, (samples, labels) in enumerate(loader):
+            # ipdb.set_trace()
             # Evaluating for the current batch
             samples = samples.to(device)
             labels = labels.to(device)

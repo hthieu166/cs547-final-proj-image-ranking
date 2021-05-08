@@ -13,8 +13,9 @@ from torch import nn
 import torchvision.models as models 
 
 from src.models.base_model import BaseModel
+from src.models.efficient_net.model import EfficientNet
 import ipdb
-
+import torch
 class TripletNetBaseline(BaseModel):
 
     def __init__(self, device, base, feat_vect_size = None, pretrained = True):
@@ -55,6 +56,9 @@ class TripletNetBaseline(BaseModel):
         elif (self.base == 'resnet50'):
             self.model = models.resnet50(pretrained = self.pretrained)
             self.model = nn.Sequential(*list(self.model.children())[:-1])
+        elif (self.base == 'efficientnet-b0'):
+            self.model = EfficientNet.from_pretrained('efficientnet-b0', include_top = False)
+            # self.model = nn.Sequential(*list(self.model.children())[:-2])
         else:
             raise ValueError("Model {} is not supported! ".format(self.base))
         # Build fc
@@ -72,7 +76,14 @@ class TripletNetBaseline(BaseModel):
         Args:
             input_tensor: pytorch input tensor
         """
+    
+        inputs = torch.rand(1, 3, 224, 224).cuda()
+        # model = EfficientNet.from_pretrained('efficientnet-b0')
+        # model.eval()
+        outputs = self.model(inputs)
+        ipdb.set_trace()
         out = self.model(input_tensor).squeeze()
+        ipdb.set_trace()
         if (self.fc != None):
             out = self.fc(out)
         return out

@@ -1,16 +1,16 @@
 # Model configs
 model_name: 'TripletNetBaseline'
 model_params:
-  base: 'resnet50'
+  base: 'efficientnet-b0'
   pretrained: True
   feat_vect_size: 512 # Using nn.Linear(model_out, feat_vect_size)
 
 # Training configs
-batch_size: 32
-n_epochs: 80
-decay_epochs: [40,60]
+batch_size: 512
+n_epochs: 3600
+decay_epochs: [1600, 2400]
 init_lr: 1e-3
-lr_decay: 0.1
+lr_decay: 0.1  # decaying rate for learning rate
 
 #Optimizer configs
 optimizer_name: SGD
@@ -19,11 +19,12 @@ optimizer_params:
   nesterov: True
 weight_decay: 1e-4
 
-n_epochs_to_log: 20
+n_epochs_to_log: 1000
+n_epochs_to_eval: 60
 
-# Image transform configs
-transforms:
-  base:
+#Image transform configs
+transforms: #data augmentation 
+  base: #apply for both train and test/evaluate
     resize: 
       size: 224
     horizontal_flip:
@@ -39,7 +40,11 @@ transforms:
 
 # Loss function configs
 loss_fn: 
-  TripletLossImproved:
-    margin_inter: 1.0
-    margin_intra: 0.01
-    beta: 0.002
+  TripletLossBatchHard:
+    margin: 1.0
+
+#Sampler configs
+sampler:
+  BatchSampler:
+    n_class: 48
+    n_num  : 2
