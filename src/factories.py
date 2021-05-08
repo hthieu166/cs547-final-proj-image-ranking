@@ -14,6 +14,7 @@ sys.path.insert(0, os.path.abspath(
 """ > Import your datasets here """
 from src.datasets.tiny_imagenet import TinyImageNetTripletDataset
 from src.datasets.tiny_imagenet import TinyImageNetDataset
+from src.datasets.market_1501   import Market1501
 
 """ > Import your models here """
 from src.models.triplet_net import TripletNet
@@ -81,7 +82,8 @@ class DatasetFactory(BaseFactory):
         self.info_msg = 'Generating dataset'
         self.objfn_dict = {
             'TinyImageNetTriplet': TinyImageNetTripletDataset,
-            'TinyImageNet': TinyImageNetDataset
+            'TinyImageNet': TinyImageNetDataset,
+            'Market1501': Market1501
         }
 
 class DataAugmentationFactory(BaseFactory):
