@@ -10,7 +10,7 @@ batch_size: 32
 n_epochs: 80
 decay_epochs: [40,60]
 init_lr: 1e-3
-lr_decay: 0.1  # decaying rate for learning rate
+lr_decay: 0.1
 
 #Optimizer configs
 optimizer_name: SGD
@@ -21,9 +21,9 @@ weight_decay: 1e-4
 
 n_epochs_to_log: 20
 
-#Image transform configs
-transforms: #data augmentation 
-  base: #apply for both train and test/evaluate
+# Image transform configs
+transforms:
+  base:
     resize: 
       size: 224
     horizontal_flip:
@@ -39,5 +39,7 @@ transforms: #data augmentation
 
 # Loss function configs
 loss_fn: 
-  TripletLossBaseline:
-    margin: 1.0
+  TripletLossImproved:
+    margin_inter: 1.0
+    margin_intra: 0.01
+    beta: 0.002

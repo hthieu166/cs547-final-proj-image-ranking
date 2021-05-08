@@ -23,7 +23,9 @@ from src.data_augmentation.image_random_erasing import RandomErasing
 
 """ > Import your loss functions here """
 from src.losses.triplet_loss_baseline import TripletLossBaseline
+
 from src.losses.triplet_loss_batch_hard import TripletLossBatchHard
+
 
 """ > Import your data samplers here """
 from src.samplers.batch_sampler import BatchSampler

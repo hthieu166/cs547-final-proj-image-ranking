@@ -1,0 +1,1 @@
+python main.py --is_training true -d ./configs/dataset_cfgs/tiny_imagenet_reid.yaml -t ./configs/train_cfgs/debug.yaml --train_mode from_scratch --logdir ./logs/log_0 --log_fname ./logs/log_0/train_0.log

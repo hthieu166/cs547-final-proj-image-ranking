@@ -1,4 +1,3 @@
-"""TinyImageNet-200 dataset dataset"""
 from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
@@ -158,6 +157,7 @@ if __name__ == "__main__":
     print("TinyImageNet")
     dataset = TinyImageNetDataset(
         "val", "/home/hthieu/data/tiny-imagenet-200", "triplet_pairs",
+
         transform = transforms.ToTensor())
     data, lbl = next(iter(dataset))
     print(data.shape, lbl)
