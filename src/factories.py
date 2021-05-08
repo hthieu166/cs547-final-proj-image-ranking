@@ -26,7 +26,7 @@ from src.losses.triplet_loss_baseline import TripletLossBaseline
 
 from src.losses.triplet_loss_batch_hard import TripletLossBatchHard
 
-
+from src.losses.triplet_improved import TripletLossImproved
 """ > Import your data samplers here """
 from src.samplers.batch_sampler import BatchSampler
 
@@ -116,7 +116,8 @@ class LossFactory(BaseFactory):
         self.info_msg = 'Generating loss function'
         self.objfn_dict = {
             "TripletLossBatchHard": TripletLossBatchHard,
-            "TripletLossBaseline": TripletLossBaseline
+            "TripletLossBaseline": TripletLossBaseline,
+            "TripletLossImproved": TripletLossImproved
         }
 
 
