@@ -8,7 +8,7 @@ import time
 import ipdb
 from torch.utils.tensorboard import SummaryWriter
 import os.path as osp
-from tester import test
+from tester import *
 from src.utils.misc import MiscUtils
 import src.utils.logging as logging
 
