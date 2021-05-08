@@ -22,14 +22,17 @@ from torchvision import transforms
 class Market1501(Dataset):
     def __init__(self, mode, data_root, datalst_pth = None, transform = None):
         self.mode = mode
+        self.val_mode = False
         assert osp.isdir(data_root), 'Not found: {}'.format(data_root)
-
         if self.mode == "train":
             self.data_root = osp.join(data_root, "bounding_box_train")
         elif self.mode == "test":
             self.data_root = osp.join(data_root, "bounding_box_test")
-        elif self.mode == "query":
+        elif self.mode == "que":
             self.data_root = osp.join(data_root, "query")
+        elif self.mode == "val":
+            self.data_root = osp.join(data_root, "bounding_box_train")
+            self.val_mode  = True
         else:
             raise "Mode does not support" 
         self.transform = transform
@@ -79,16 +82,17 @@ class Market1501(Dataset):
        
 if __name__ == "__main__":
     print("Market-1501")
+    root_dir = "/mnt/data0-nfs/shared-datasets/Market-1501-v15.09.15/"
     dataset = Market1501(
-        "train", "/home/hthieu/data/Market-1501-v15.09.15/",
+        "train",root_dir,
         transform = transforms.ToTensor())
     print("Train #id:", dataset.get_nclasses())
     dataset = Market1501(
-        "test", "/home/hthieu/data/Market-1501-v15.09.15/",
+        "test", root_dir,
         transform = transforms.ToTensor())
     print("Test #id:", dataset.get_nclasses())
     dataset = Market1501(
-        "query", "/home/hthieu/data/Market-1501-v15.09.15/",
+        "que", root_dir,
         transform = transforms.ToTensor())
     print("Query #id:", dataset.get_nclasses())
     data, lbl = next(iter(dataset))

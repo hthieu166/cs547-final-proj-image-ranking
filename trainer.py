@@ -72,22 +72,37 @@ def train(model, optimizer, criterion, loaders, logdir,
         
         if (epoch + 1) % n_epochs_to_eval == 0:
             # Validation phase
-            val_loader   = loaders["val"]
-            img_ranking_acc = test(model, criterion, val_loader, device)
+            if  "val" in loaders:
+                val_loader   = loaders["val"]
+                img_ranking_acc = test(model, criterion, val_loader, device)
+                
+                logger.info("Score@1: {:.03f} \t Score@10: {:.03f} \t Score@49: {:.03f}".format(
+                img_ranking_acc["acc_top1"] *100, img_ranking_acc["acc_top10"] *100, img_ranking_acc["acc_top49"] * 100,  
+                ))
+                val_score = img_ranking_acc["acc_top49"]
+
+            elif "que" in loaders and "gal" in loaders:
+                que_loader   = loaders["que"]
+                gal_loader   = loaders["gal"]
+                img_ranking_acc = test_que_gal(model, criterion, 
+                    que_loader, gal_loader, device)
+                logger.info("mAP: {:.03f} \t Score@1: {:.03f} \t Score@5: {:.03f} \t Score@10: {:.03f}".format(
+                img_ranking_acc["mAP"],
+                img_ranking_acc["acc_top1"] *100, img_ranking_acc["acc_top5"] *100, img_ranking_acc["acc_top10"] * 100,  
+                ))
+                val_score = img_ranking_acc["mAP"]
+
             # Log using Tensorboard
             writer.add_scalars('losses', {'train': train_loss}, epoch)
+            ipdb.set_trace()
             writer.add_scalars('val_acc', img_ranking_acc, epoch)
 
             # Save training results when necessary
             if (epoch+1) % train_params['n_epochs_to_log'] == 0:
                 MiscUtils.save_progress(model, optimizer, logdir, epoch)
 
-            logger.info("Score@1: {:.03f} \t Score@10: {:.03f} \t Score@49: {:.03f}".format(
-                img_ranking_acc["acc_top1"] *100, img_ranking_acc["acc_top10"] *100, img_ranking_acc["acc_top49"] * 100,  
-            ))
-
             # Backup the best model
-            val_score = img_ranking_acc["acc_top49"]
+            
             if  val_score> best_score:
                 logger.info('Current best score: %.3f' % val_score)
                 best_score = val_score
@@ -140,7 +155,7 @@ def train_one_epoch(model, optimizer, criterion, train_loader, device, writer, r
             p_feat  = model(samples[:,1,...])
             n_feat  = model(samples[:,2,...])
             outputs = {'a_feat': a_feat, 'p_feat':p_feat, 'n_feat': n_feat}
-        elif train_loader.dataset.name == "TinyImageNetDataset":
+        elif train_loader.dataset.name in ["TinyImageNetDataset", "Market1501Dataset"]:
             # Sampling: batch hard
             outputs = model(samples)
 

@@ -155,7 +155,7 @@ def main():
             eval_res = test(model, criterion, test_loaders, device, export_result = True)
         elif dataset_name in ["Market1501"]:
             que_loader = loader_fact.build_loader("que",  do_shuffle= False, do_drop_last = False)
-            gal_loader = loader_fact.build_loader("test", do_shuffle= False, do_drop_last = False)
+            gal_loader = loader_fact.build_loader("gal", do_shuffle= False, do_drop_last = False)
             eval_res = test_que_gal(model, criterion, 
                     que_loader, gal_loader, device, export_result = True)
        

@@ -76,14 +76,7 @@ class TripletNetBaseline(BaseModel):
         Args:
             input_tensor: pytorch input tensor
         """
-    
-        inputs = torch.rand(1, 3, 224, 224).cuda()
-        # model = EfficientNet.from_pretrained('efficientnet-b0')
-        # model.eval()
-        outputs = self.model(inputs)
-        ipdb.set_trace()
         out = self.model(input_tensor).squeeze()
-        ipdb.set_trace()
         if (self.fc != None):
             out = self.fc(out)
         return out

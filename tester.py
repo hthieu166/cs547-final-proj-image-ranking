@@ -69,7 +69,7 @@ def test_que_gal(model, criterion, que_loader, gal_loader, device, export_result
     assert gal_loader is not None, "Evaluation loader is not specified"
     assert que_loader  is not None, "Query loader is not specified"
     # Setup progressbar
-    pbar = MiscUtils.gen_pbar(max_value=len(test_loader) + len(gal_loader), msg="Testing: ")
+    pbar = MiscUtils.gen_pbar(max_value=len(que_loader) + len(gal_loader), msg="Testing: ")
     que_img_embs = []
     que_img_lbls = []
     gal_img_embs = []
