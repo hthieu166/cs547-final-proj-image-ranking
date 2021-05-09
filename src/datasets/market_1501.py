@@ -24,21 +24,30 @@ class Market1501(Dataset):
         self.mode = mode
         self.val_mode = False
         assert osp.isdir(data_root), 'Not found: {}'.format(data_root)
-        if self.mode == "train":
+        if self.mode == "trainval":
             self.data_root = osp.join(data_root, "bounding_box_train")
         elif self.mode == "test":
             self.data_root = osp.join(data_root, "bounding_box_test")
         elif self.mode == "que":
             self.data_root = osp.join(data_root, "query")
-        elif self.mode == "val":
+        elif self.mode == "train" or  self.mode == "val":
             self.data_root = osp.join(data_root, "bounding_box_train")
             self.val_mode  = True
         else:
             raise "Mode does not support" 
         self.transform = transform
         self.name = "Market1501Dataset"
-        self.imgs_path = glob.glob(osp.join(self.data_root, "*.jpg"))
-        self.imgs_cls  = [int(osp.basename(img_path).split('_')[0]) for img_path in self.imgs_path]
+        self.imgs_path = np.array(glob.glob(osp.join(self.data_root, "*.jpg")))
+        self.imgs_cls  = np.array([int(osp.basename(img_path).split('_')[0]) for img_path in self.imgs_path])
+
+        if self.val_mode == True:
+            uniqe_lbls = self.get_unique_labels()
+            val_lbls    = uniqe_lbls[::7]
+            val_idx     = np.isin(self.imgs_cls, val_lbls)
+            train_idx   = ~val_idx
+            slc_idx     = train_idx if self.mode == "train" else val_idx
+            self.imgs_path = self.imgs_path[slc_idx]
+            self.imgs_cls = self.imgs_cls[slc_idx]
 
     def resampling_triplet(self):
         pass
@@ -58,7 +67,9 @@ class Market1501(Dataset):
         return len(self.get_unique_labels())
 
     def get_unique_labels(self):
-        return np.unique(self.imgs_cls)
+        ulbl = np.unique(self.imgs_cls)
+        ulbl.sort()
+        return ulbl
 
     def __len__(self):
         return len(self.imgs_cls)
@@ -84,16 +95,32 @@ if __name__ == "__main__":
     print("Market-1501")
     root_dir = "/mnt/data0-nfs/shared-datasets/Market-1501-v15.09.15/"
     dataset = Market1501(
-        "train",root_dir,
+        "trainval",root_dir,
         transform = transforms.ToTensor())
-    print("Train #id:", dataset.get_nclasses())
+    print("Trainval #id:", dataset.get_nclasses())
+    
     dataset = Market1501(
         "test", root_dir,
         transform = transforms.ToTensor())
     print("Test #id:", dataset.get_nclasses())
+   
     dataset = Market1501(
         "que", root_dir,
         transform = transforms.ToTensor())
     print("Query #id:", dataset.get_nclasses())
+    
+    dataset = Market1501(
+        "train", root_dir,
+        transform = transforms.ToTensor())
+    print(len(dataset))
+    # print(dataset.get_unique_labels())
+    print("Train #id:", dataset.get_nclasses())
+    
+    dataset = Market1501(
+        "val", root_dir,
+        transform = transforms.ToTensor())
+    print(len(dataset))
+    # print(dataset.get_unique_labels())
+    print("Val #id:", dataset.get_nclasses())
     data, lbl = next(iter(dataset))
     print(data.shape, lbl)

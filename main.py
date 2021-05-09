@@ -121,13 +121,14 @@ def main():
     if args.is_training:
         train_val_loaders = {
             "train": loader_fact.build_loader("train", sampler_name = train_sampler_name,
-                                                      sampler_params= train_sampler_params)
+                                                      sampler_params= train_sampler_params),
+            "val":   loader_fact.build_loader("val",  do_shuffle= False, do_drop_last = False)
         }
-        if  dataset_name in ["TinyImageNetTriplet", "TinyImageNet"]:
-            train_val_loaders["val"] = loader_fact.build_loader("val",  do_shuffle= False, do_drop_last = False)
-        elif dataset_name in ["Market1501"]:
-            train_val_loaders["que"] = loader_fact.build_loader("que",  do_shuffle= False, do_drop_last = False)
-            train_val_loaders["gal"] = loader_fact.build_loader("test", do_shuffle= False, do_drop_last = False)
+        # if  dataset_name in ["TinyImageNetTriplet", "TinyImageNet"]:
+        #     train_val_loaders["val"] = loader_fact.build_loader("val",  do_shuffle= False, do_drop_last = False)
+        # elif dataset_name in ["Market1501"]:
+        #     train_val_loaders["que"] = loader_fact.build_loader("que",  do_shuffle= False, do_drop_last = False)
+        #     train_val_loaders["gal"] = loader_fact.build_loader("test", do_shuffle= False, do_drop_last = False)
         
         # Create optimizer
         if train_params["optimizer_name"] == "Adam":
@@ -155,9 +156,11 @@ def main():
             eval_res = test(model, criterion, test_loaders, device, export_result = True)
         elif dataset_name in ["Market1501"]:
             que_loader = loader_fact.build_loader("que",  do_shuffle= False, do_drop_last = False)
-            gal_loader = loader_fact.build_loader("gal", do_shuffle= False, do_drop_last = False)
-            eval_res = test_que_gal(model, criterion, 
-                    que_loader, gal_loader, device, export_result = True)
+            gal_loader = loader_fact.build_loader("test", do_shuffle= False, do_drop_last = False)
+            eval_res = test(model, criterion, 
+                    gal_loader = gal_loader, 
+                    que_loader = que_loader, 
+                    device = device, export_result = True)
        
         eval_dir = osp.join(args.logdir, "eval_results")
         os.makedirs(eval_dir, exist_ok = True)

@@ -27,8 +27,8 @@ transforms: #data augmentation
   base: #apply for both train and test/evaluate
     resize: 
       size: 224
-    horizontal_flip:
-      p: 0.5    
+    # horizontal_flip:
+    #   p: 0.5    
     # resize: 
     #   size: 256
     # center_crop: 

@@ -37,10 +37,19 @@ def calculate_mAP(dist, match):
 
 
 def img_ranking_evaluate_Market1501(
-        gal_embs, gal_lbls, que_embs, que_lbls, export_result = False):
+        gal_embs, gal_lbls, que_embs = None, que_lbls = None, export_result = False, same_gal_que = False):
+    
+    no_que_set = False
+    if que_embs == None:
+        que_lbls   = gal_lbls
+        que_embs   = gal_embs
+        no_que_set = True
     
     #Pair-wise L2 distance between each pair
     c_dist   = torch.cdist(que_embs, gal_embs)
+    if (no_que_set):
+        print("No query-set")
+        c_dist.fill_diagonal_(float('inf'))
     
     #Sort the image id in ascending order by its distance 
     img_rank = torch.argsort(c_dist, dim = 1)
@@ -53,10 +62,10 @@ def img_ranking_evaluate_Market1501(
 
     #Calculate top K-accuracy:
     correct_pred  = img_label_pred == labels
-    top_1  = correct_pred[:, 1]
-    top_5  = correct_pred[:, 1:6]
-    top_10 = correct_pred[:, 1:11]
-    top_49 = correct_pred[:, 1:50]
+    top_1  = correct_pred[:, 0]
+    top_5  = correct_pred[:, :5]
+    top_10 = correct_pred[:, :10]
+    top_49 = correct_pred[:, :49]
     top_1  = top_1.to(torch.float).mean()
     top_10 = top_10.to(torch.float).mean()
     top_49 = top_49.to(torch.float).mean()
@@ -72,14 +81,13 @@ def img_ranking_evaluate_Market1501(
         ret_res["preds"] = img_rank.cpu().numpy()
     return ret_res
 
-def compute_map(correct_preds):
-    correct_preds.cumsum()
 if __name__ == "__main__":
     torch.manual_seed(10)
     n_imgs = 50
     # img_embs = torch.randn(n_imgs, 128)
     # labels   = torch.randint(0,10,(n_imgs,1), dtype=torch.int)
     # img_ranking_evaluate(img_embs, labels)
+    
     gal_embs = torch.randn(n_imgs, 128)
     que_embs = torch.randn(n_imgs//2, 128)
     gal_lbls = torch.randint(0,10,(n_imgs,1), dtype=torch.int)

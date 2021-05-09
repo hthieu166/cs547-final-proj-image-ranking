@@ -72,29 +72,13 @@ def train(model, optimizer, criterion, loaders, logdir,
         
         if (epoch + 1) % n_epochs_to_eval == 0:
             # Validation phase
-            if  "val" in loaders:
-                val_loader   = loaders["val"]
-                img_ranking_acc = test(model, criterion, val_loader, device)
-                
-                logger.info("Score@1: {:.03f} \t Score@10: {:.03f} \t Score@49: {:.03f}".format(
-                img_ranking_acc["acc_top1"] *100, img_ranking_acc["acc_top10"] *100, img_ranking_acc["acc_top49"] * 100,  
-                ))
-                val_score = img_ranking_acc["acc_top49"]
+            img_ranking_acc = test(model, criterion, 
+                gal_loader = loaders["val"], que_loader = None , device = device)
 
-            elif "que" in loaders and "gal" in loaders:
-                que_loader   = loaders["que"]
-                gal_loader   = loaders["gal"]
-                img_ranking_acc = test_que_gal(model, criterion, 
-                    que_loader, gal_loader, device)
-                logger.info("mAP: {:.03f} \t Score@1: {:.03f} \t Score@5: {:.03f} \t Score@10: {:.03f}".format(
-                img_ranking_acc["mAP"],
-                img_ranking_acc["acc_top1"] *100, img_ranking_acc["acc_top5"] *100, img_ranking_acc["acc_top10"] * 100,  
-                ))
-                val_score = img_ranking_acc["mAP"]
+            val_score = img_ranking_acc["mAP"]
 
             # Log using Tensorboard
             writer.add_scalars('losses', {'train': train_loss}, epoch)
-            ipdb.set_trace()
             writer.add_scalars('val_acc', img_ranking_acc, epoch)
 
             # Save training results when necessary
@@ -156,7 +140,7 @@ def train_one_epoch(model, optimizer, criterion, train_loader, device, writer, r
             n_feat  = model(samples[:,2,...])
             outputs = {'a_feat': a_feat, 'p_feat':p_feat, 'n_feat': n_feat}
         elif train_loader.dataset.name in ["TinyImageNetDataset", "Market1501Dataset"]:
-            # Sampling: batch hard
+            # Sampling: batch sampling
             outputs = model(samples)
 
         loss = criterion(outputs, labels)
