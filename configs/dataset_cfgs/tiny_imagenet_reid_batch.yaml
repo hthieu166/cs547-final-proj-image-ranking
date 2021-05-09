@@ -1,4 +1,4 @@
 dataset_name: 'TinyImageNet'
 dataset_params:
-    data_root:     '/home/hthieu/data/tiny-imagenet-200/'
+    data_root:     '/mnt/data0-nfs/shared-datasets/tiny-imagenet-200/'
     triplets_dir:  'triplet_pairs/'

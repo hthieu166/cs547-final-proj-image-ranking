@@ -46,28 +46,33 @@ class TripletNetBaseline(BaseModel):
     def build_model(self):
         """Build model architecture
         """
+        base_out_channels = 2048
         # Build backbone
         if (self.base == 'resnet101'):
             resnet = models.resnet101(pretrained = self.pretrained)
             self.model = nn.Sequential(*list(resnet.children())[:-1])
-        elif (self.base == 'densenet161'):
-            self.model = models.resnet101(pretrained = self.pretrained)
-            self.model = nn.Sequential(*list(self.model.children())[:-1])
+        
         elif (self.base == 'resnet50'):
             self.model = models.resnet50(pretrained = self.pretrained)
             self.model = nn.Sequential(*list(self.model.children())[:-1])
-        elif (self.base == 'efficientnet-b0'):
-            self.model = EfficientNet.from_pretrained('efficientnet-b0', include_top = False)
-            # self.model = nn.Sequential(*list(self.model.children())[:-2])
+        
+        elif (self.base == 'densenet121'):
+            self.model = torch.hub.load('pytorch/vision:v0.9.0', 'densenet121', pretrained=True)
+            self.model = nn.Sequential(*list(self.model.children())[:-1],
+                                        nn.AdaptiveAvgPool2d(1))
+            base_out_channels = 1024
+        elif ('efficientnet' in self.base):
+            self.model = EfficientNet.from_pretrained(self.base, include_top = False)
+            ver = self.base.split('-')[1]
+            if ver in['b0', 'b1']:
+                base_out_channels = 1280
+            elif ver in ['b2']:
+                base_out_channels = 1408
         else:
             raise ValueError("Model {} is not supported! ".format(self.base))
         # Build fc
         if (self.feat_vect_size != None):
-            nn.Sequential(
-                # nn.BatchNorm1d(2048),
-                nn.Linear(2048, self.feat_vect_size)
-            )
-            self.fc = nn.Linear(2048, self.feat_vect_size)
+            self.fc = nn.Linear(base_out_channels, self.feat_vect_size)
         else:
             self.fc = None
 
@@ -76,14 +81,8 @@ class TripletNetBaseline(BaseModel):
         Args:
             input_tensor: pytorch input tensor
         """
-    
-        inputs = torch.rand(1, 3, 224, 224).cuda()
-        # model = EfficientNet.from_pretrained('efficientnet-b0')
-        # model.eval()
-        outputs = self.model(inputs)
-        ipdb.set_trace()
         out = self.model(input_tensor).squeeze()
-        ipdb.set_trace()
+        # ipdb.set_trace()
         if (self.fc != None):
             out = self.fc(out)
         return out

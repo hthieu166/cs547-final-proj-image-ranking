@@ -1,7 +1,7 @@
 # Model configs
 model_name: 'TripletNetBaseline'
 model_params:
-  base: 'efficientnet-b0'
+  base: 'efficientnet-b2'
   pretrained: True
   feat_vect_size: 512 # Using nn.Linear(model_out, feat_vect_size)
 
@@ -28,11 +28,7 @@ transforms: #data augmentation
     resize: 
       size: 224
     horizontal_flip:
-      p: 0.5    
-    # resize: 
-    #   size: 256
-    # center_crop: 
-    #   size: 224
+      p: 0.5
     to_tensor:
     normalize:
       mean: [0.485, 0.456, 0.406]

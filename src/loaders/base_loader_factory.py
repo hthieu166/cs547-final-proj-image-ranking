@@ -23,7 +23,7 @@ class BaseDataLoaderFactory():
         self.sampler_fact = DataSamplerFactory()
     
         # Init
-        self.ld_dict = {'train': {}, 'val':{}, 'test': {}}
+        self.ld_dict = {'train': {}, 'val':{}, 'test': {}, 'que': {}}
         # self.get_data_split()
         self.build_base_parameters()
         self.gen_data_augmentation()
@@ -35,9 +35,8 @@ class BaseDataLoaderFactory():
         self.ld_dict['test']  = {}
 
     def set_all(self, key, val):
-        self.ld_dict['train'][key] = val
-        self.ld_dict['test'][key] = val
-        self.ld_dict['val'][key] = val
+        for k in self.ld_dict:
+            self.ld_dict[k][key] = val 
 
     def build_base_parameters(self):
         self.set_all("ld_params", dict(self.base_loader_params))
@@ -102,7 +101,6 @@ class BaseDataLoaderFactory():
         _ld_dict = self.ld_dict[mode]
         #Set shuffle and drop_last
         _shuffle, _drop_last = do_shuffle, do_drop_last
-        
         # Add transform
         _transform = self.get_transform(_ld_dict['transform'])
         _data_params = self.dataset_params

@@ -17,7 +17,7 @@ from src.utils.load_cfg import ConfigLoader
 from src.factories import ModelFactory, LossFactory, DataSamplerFactory
 from src.loaders.base_loader_factory import BaseDataLoaderFactory
 from trainer import train
-from tester import test
+from tester import *
 import src.utils.logging as logging
 logger = logging.get_logger(__name__)
 import ipdb
@@ -122,8 +122,14 @@ def main():
         train_val_loaders = {
             "train": loader_fact.build_loader("train", sampler_name = train_sampler_name,
                                                       sampler_params= train_sampler_params),
-            "val"  : loader_fact.build_loader("val",  do_shuffle= False, do_drop_last = False)
+            "val":   loader_fact.build_loader("val",  do_shuffle= False, do_drop_last = False)
         }
+        # if  dataset_name in ["TinyImageNetTriplet", "TinyImageNet"]:
+        #     train_val_loaders["val"] = loader_fact.build_loader("val",  do_shuffle= False, do_drop_last = False)
+        # elif dataset_name in ["Market1501"]:
+        #     train_val_loaders["que"] = loader_fact.build_loader("que",  do_shuffle= False, do_drop_last = False)
+        #     train_val_loaders["gal"] = loader_fact.build_loader("test", do_shuffle= False, do_drop_last = False)
+        
         # Create optimizer
         if train_params["optimizer_name"] == "Adam":
             logger.info("Using Adam optimizer")
@@ -142,13 +148,24 @@ def main():
         train(model, optimizer, criterion, train_val_loaders, args.logdir,
               args.train_mode, train_params, device, args.pretrained_model_path)
     else:
-        # Create data loader for testing
-        test_loaders = loader_fact.build_loader("val",  do_shuffle= False, do_drop_last = False)
         model.load_model(args.pretrained_model_path)
-        eval_res = test(model, criterion, test_loaders, device, export_result = True)
+       
+        if  dataset_name in ["TinyImageNetTriplet", "TinyImageNet"]:
+             # Create data loader for testing
+            test_loaders = loader_fact.build_loader("val",  do_shuffle= False, do_drop_last = False)
+            eval_res = test(model, criterion, test_loaders, device, export_result = False)
+        elif dataset_name in ["Market1501"]:
+            que_loader = loader_fact.build_loader("que",  do_shuffle= False, do_drop_last = False)
+            gal_loader = loader_fact.build_loader("test", do_shuffle= False, do_drop_last = False)
+            eval_res = test(model, criterion, 
+                    gal_loader = gal_loader, 
+                    que_loader = que_loader, 
+                    device = device, export_result = True)
+       
         eval_dir = osp.join(args.logdir, "eval_results")
         os.makedirs(eval_dir, exist_ok = True)
-        np.save(osp.join(eval_dir, "val_preds.npy"), eval_res["preds"])   
+        if "preds" in eval_res:
+            np.save(osp.join(eval_dir, "val_preds.npy"), eval_res["preds"])   
     return 0
 
 if __name__ == '__main__':
