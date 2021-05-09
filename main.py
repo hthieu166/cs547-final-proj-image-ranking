@@ -153,7 +153,7 @@ def main():
         if  dataset_name in ["TinyImageNetTriplet", "TinyImageNet"]:
              # Create data loader for testing
             test_loaders = loader_fact.build_loader("val",  do_shuffle= False, do_drop_last = False)
-            eval_res = test(model, criterion, test_loaders, device, export_result = True)
+            eval_res = test(model, criterion, test_loaders, device, export_result = False)
         elif dataset_name in ["Market1501"]:
             que_loader = loader_fact.build_loader("que",  do_shuffle= False, do_drop_last = False)
             gal_loader = loader_fact.build_loader("test", do_shuffle= False, do_drop_last = False)
@@ -164,7 +164,8 @@ def main():
        
         eval_dir = osp.join(args.logdir, "eval_results")
         os.makedirs(eval_dir, exist_ok = True)
-        np.save(osp.join(eval_dir, "val_preds.npy"), eval_res["preds"])   
+        if "preds" in eval_res:
+            np.save(osp.join(eval_dir, "val_preds.npy"), eval_res["preds"])   
     return 0
 
 if __name__ == '__main__':
