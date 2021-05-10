@@ -6,11 +6,11 @@ model_params:
   feat_vect_size: 512 # Using nn.Linear(model_out, feat_vect_size)
 
 # Training configs
-batch_size: 32
-n_epochs: 80
-decay_epochs: [40,60]
+batch_size: 512
+n_epochs: 9
+decay_epochs: [1600, 2400]
 init_lr: 1e-3
-lr_decay: 0.1
+lr_decay: 0.1  # decaying rate for learning rate
 
 #Optimizer configs
 optimizer_name: SGD
@@ -19,19 +19,14 @@ optimizer_params:
   nesterov: True
 weight_decay: 1e-4
 
-n_epochs_to_log: 20
+n_epochs_to_log: 1000
+n_epochs_to_eval: 3
 
-# Image transform configs
-transforms:
-  base:
+#Image transform configs
+transforms: #data augmentation 
+  base: #apply for both train and test/evaluate
     resize: 
       size: 224
-    horizontal_flip:
-      p: 0.5    
-    # resize: 
-    #   size: 256
-    # center_crop: 
-    #   size: 224
     to_tensor:
     normalize:
       mean: [0.485, 0.456, 0.406]
@@ -39,7 +34,11 @@ transforms:
 
 # Loss function configs
 loss_fn: 
-  TripletLossImproved:
-    margin_inter: 1.0
-    margin_intra: 0.01
-    beta: 0.002
+  TripletLossBatchHard:
+    margin: 1.0
+
+#Sampler configs
+sampler:
+  BatchSampler:
+    n_class: 48
+    n_num  : 2

@@ -34,7 +34,7 @@ transforms: #data augmentation
 
 # Loss function configs
 loss_fn: 
-  TripletLossBatchHard:
+  TripletLossBatchAll:
     margin: 1.0
 
 #Sampler configs
