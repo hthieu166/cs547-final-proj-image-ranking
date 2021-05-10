@@ -62,7 +62,7 @@ class TripletNetBaseline(BaseModel):
             self.model = resnet50(3, 3)
         
         elif (self.base == 'densenet121'):
-            self.model = torch.hub.load('pytorch/vision:v0.9.0', 'densenet121', pretrained=True)
+            self.model = torch.hub.load('pytorch/vision:v0.9.0', 'densenet121', pretrained=self.pretrained)
             self.model = nn.Sequential(*list(self.model.children())[:-1],
                                         nn.AdaptiveAvgPool2d(1))
             base_out_channels = 1024
