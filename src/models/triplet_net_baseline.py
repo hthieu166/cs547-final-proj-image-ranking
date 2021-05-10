@@ -87,7 +87,7 @@ class TripletNetBaseline(BaseModel):
             input_tensor: pytorch input tensor
         """
         out = self.model(input_tensor).squeeze()
-        # ipdb.set_trace()
+        
         if (self.fc != None):
             out = self.fc(out)
         return out

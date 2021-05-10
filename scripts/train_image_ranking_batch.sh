@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-exp_id="img_ranking_batchhard_efficientnet_b2"
+exp_id="img_ranking_batchhard_efficientnet_b2_no_aug"
 
 source "scripts/master_env.sh"
 

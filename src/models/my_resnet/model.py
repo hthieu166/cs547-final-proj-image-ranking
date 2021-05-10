@@ -1,7 +1,7 @@
 import torch
 torch.cuda.empty_cache()
 import torch.nn as nn
-from torchsummary import summary
+# from torchsummary import summary
 import torchvision.models as models
 
 from functools import partial
