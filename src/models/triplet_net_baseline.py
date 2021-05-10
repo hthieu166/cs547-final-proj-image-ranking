@@ -9,11 +9,13 @@ sys.path.insert(0, os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..', '..', 'src')))
 
 from torch import nn
-#immport base model here:
+#immport backbone models
 import torchvision.models as models 
 
 from src.models.base_model import BaseModel
 from src.models.efficient_net.model import EfficientNet
+from src.models.my_resnet.model import resnet50
+
 import ipdb
 import torch
 class TripletNetBaseline(BaseModel):
@@ -55,6 +57,9 @@ class TripletNetBaseline(BaseModel):
         elif (self.base == 'resnet50'):
             self.model = models.resnet50(pretrained = self.pretrained)
             self.model = nn.Sequential(*list(self.model.children())[:-1])
+        
+        elif (self.base == 'my_resnet50'):
+            self.model = resnet50(3, 3)
         
         elif (self.base == 'densenet121'):
             self.model = torch.hub.load('pytorch/vision:v0.9.0', 'densenet121', pretrained=True)
