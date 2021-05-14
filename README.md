@@ -1,4 +1,9 @@
-# CS547-Final Project Image Ranking
+# [CS547/SP21/GROUP 31 - Final Project] Image Ranking
+GitHub Repo: https://github.com/hthieu166/cs547-final-proj-image-ranking
+## Authors
+Hieu Hoang; 	Dong Kai Wang;		Kesav Shivam;	Yashaswini Murthy
+
+{hthieu, dwang47, kshivam2, ymurthy}@illinois.edu
 
 ## Installation
 ### Setup
@@ -8,8 +13,12 @@ $ conda env -f environment.yml
 $ conda activate py3torch
 ```
 ### Dataset
-Download and extract the Tiny-ImageNet dataset from this link:
+* Download and extract Tiny-ImageNet 200 dataset from this link:
 https://drive.google.com/file/d/1ATb_Xy-LsuT67ZmngSYaBabVvuEkBDSH/view?usp=sharing
+* Download and extract Market-1501 dataset from this link:
+https://www.kaggle.com/pengcw1/market-1501/data
+
+### Setup
 
 Before starting any experiment, training and model configurations should be defined in
 ```
@@ -20,6 +29,8 @@ If you want to use your own model, loss, sampling objects, data augmentation str
 ```
 src/factories.py
 ```
+
+Implementation of models, online sampling techniques and loss functions are available uder `src/`
 
 ### Training
 Open a script file (e.g. `scripts/image_ranking.sh`), change `--is_training` flag to `true` and execute the script:
@@ -34,3 +45,7 @@ $ tensorboard --logdir=./ --port [YOUR PORT NUMBER]
 
 ### Testing
 Similarly, change `--is_training` flag to `false`, specify the directory output under `--output` flag and the weight of your model under `--pretrained_model_path`
+
+## Logs Folder
+Logs folder of our experiments is available at:
+https://drive.google.com/drive/folders/18iSUuAwz_eeA9HM3gcaMO66DPUiIaCdI?usp=sharing
