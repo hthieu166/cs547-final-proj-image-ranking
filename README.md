@@ -1,7 +1,7 @@
 # [CS547/SP21/GROUP 31 - Final Project] Image Ranking
 GitHub Repo: https://github.com/hthieu166/cs547-final-proj-image-ranking
 ## Authors
-Hieu Hoang; 	Dong Kai Wang;		Kesav Shivam;	Yashaswini Murthy
+Hieu Hoang; 	Dong Kai Wang;		Keshav Shivam;	Yashaswini Murthy
 
 {hthieu, dwang47, kshivam2, ymurthy}@illinois.edu
 
